@@ -1,40 +1,44 @@
 import socket
 import os
 
-sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+if os.geteuid() != 0:
+    print("Run it as root!")
+    exit(1)
 
-port = int(input("Enter the port to be listened:\n"))
-ip = str(input("Enter the ip address to be listened:\n"))
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+port = int(input("Enter the port to listen on:\n"))
+ip = str(input("Enter the IP address to listen on:\n"))
 key = "SKYFM"
 directory = "/var/www/html/"
 os.chdir(directory)
-try: 
-    sock.bind((ip,port))
+
+try:
+    sock.bind((ip, port))
 except Exception as e:
-    print(e)
+    print(f"Error binding socket: {e}")
     exit(1)
+
 sock.listen()
 print(f"Listening on {ip}:{port}")
-while 1:
+
+while True:
     try:
         conn, addr = sock.accept()
-        print("Got connection from",addr)
-        passkey = conn.recv(1024)
-        if passkey.decode('utf-8') == key:
-            conn.send("Welcome back! Please enter new file name:".encode())
-            filename = conn.recv(1024)
-            with open(filename.decode('utf-8'),"wb") as f:
+        print("Got connection from", addr)
+        passkey = conn.recv(1024).decode('utf-8')
+        if passkey == key:
+            filename = conn.recv(1024).decode('utf-8')
+            with open(filename, "wb") as f:
                 while 1:
                     data = conn.recv(1024)
-                    if not data:
+                    if b"DONE" in data or data == "DONE":
+                        f.write(data.decode('utf-8').replace("DONE","").encode())
+                        conn.close()
                         break
-                    f.write(data)
-                f.close()
-            conn.send("Your file has been transfered!".encode())            
-            conn.close()
         else:
-            print(f"{addr} has entered wrong key!")
+            print(f"{addr} has entered the wrong key!")
             conn.send("Wrong passkey!".encode())
-            conn.close()    
+            conn.close()
     except Exception as e:
-        print(e)            
+        print(f"An error occurred: {e}")
