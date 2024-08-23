@@ -9,15 +9,11 @@ try:
     sock.connect((ip,port))
     print(f"Connected to {ip}:{port}")
     sock.send(passkey.encode())
-    sock.recv(1024)
-    filename = str(input(""))
+    filename = str(input("Enter the filename you want to upload:\n"))
     sock.send(filename.encode())
     with open(filename,"rb") as f:
-        data = f.read(1024)
-        while data:
-            sock.send(data)
-            data = f.read(1024)
-    sock.send(b'')
+        sock.sendfile(f)
+    sock.send(b'DONE')
     print("File sent.")        
     response = sock.recv(1024)
     print(f"Recieved {response.decode('utf-8')}")
