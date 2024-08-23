@@ -10,7 +10,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = int(input("Enter the port to listen on:\n"))
 ip = str(input("Enter the IP address to listen on:\n"))
 key = "SKYFM"
-directory = "/var/www/html/"
+directory = "/var/www/html/easytransfer"
 os.chdir(directory)
 
 try:
