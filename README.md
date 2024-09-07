@@ -1,3 +1,5 @@
+![Ekran görüntüsü 2024-09-07 170424](https://github.com/user-attachments/assets/8d4f5113-8438-4643-a940-eec87fc5c3b6)
+
 Easy Transfer is a file server/uploading service I made in order to make file uploading to my Raspberry Pi easier. It is a bit buggy and might not be so secure. So, using it is your own risk.
 
 # Installation
